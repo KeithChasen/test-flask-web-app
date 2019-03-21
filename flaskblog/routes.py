@@ -10,8 +10,10 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 @app.route("/")
 @app.route("/home")
+@login_required
 def home():
-    posts = Post.query.all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.paginate(page=page, per_page=3)
     return render_template('home.html', posts=posts)
 
 
@@ -104,6 +106,7 @@ def new_post():
 
 
 @app.route('/post/<int:post_id>')
+@login_required
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', title=post.title, post=post)
